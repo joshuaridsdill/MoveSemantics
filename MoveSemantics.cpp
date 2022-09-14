@@ -3,6 +3,23 @@
 
 #include <iostream>
 
+#define NULL_TERMINATOR 1
+
+/** MUST define to get dub strings printed to the console
+*       |
+*       |
+*       V
+* **/
+        
+
+//#define DEBUGGING
+
+#ifdef DEBUGGING
+#define DEBUG_PRINT(x) std::cout << x << '\n'
+#else
+#define DEBUG_PRINT(x)
+#endif
+
 class String
 {
 public:
@@ -11,19 +28,18 @@ public:
     String(const char* str)
     {
         m_Size = strlen(str);
-        m_Data = new char[m_Size + 1];
-        //memcpy_s(&m_Data, m_Size, str, m_Size);
+        m_Data = new char[m_Size + NULL_TERMINATOR];
         memcpy(m_Data, str, m_Size);
         *(m_Data + m_Size) = '\0';
-        std::cout << "Created!\n";
+        DEBUG_PRINT("Created!");
     }
 
     String(const String& str) noexcept
     {
         m_Size = str.m_Size;
-        m_Data = new char[m_Size];
-        memcpy_s(&m_Data, m_Size, str.m_Data, m_Size);
-        std::cout << "Copied!\n";
+        m_Data = new char[m_Size + NULL_TERMINATOR];
+        memcpy(&m_Data, &str.m_Data, m_Size + NULL_TERMINATOR);
+        DEBUG_PRINT("Copied!");
     }
 
     String(String&& str) noexcept
@@ -34,7 +50,12 @@ public:
         str.m_Data = nullptr;
         str.m_Size = 0;
 
-        std::cout << "Moved!\n";
+        DEBUG_PRINT("Moved!");
+    }
+
+    ~String()
+    {
+        DEBUG_PRINT("Destroyed!");
     }
 
     String& operator=(const String& str)
@@ -44,8 +65,8 @@ public:
             delete[] m_Data;
 
             m_Size = str.m_Size;
-            m_Data = new char[m_Size+1];
-            memcpy(m_Data, str.m_Data, m_Size+1);
+            m_Data = new char[m_Size + NULL_TERMINATOR];
+            memcpy(m_Data, str.m_Data, m_Size + NULL_TERMINATOR);
         }
         return *this;
     }
@@ -97,33 +118,33 @@ public:
         :
         m_Name(name)
     {
-        std::cout << "Created!\n";
+        DEBUG_PRINT("Created!");
     }
 
     Entity(String&& name) noexcept
         :
         m_Name(std::move(name))
     {
-        std::cout << "Created!\n";
+        DEBUG_PRINT("Created!");
     }
 
     Entity(Entity& e) noexcept
+        :
+        m_Name(e.m_Name)
     {
-        m_Name = new char[e.m_Name.Size() + 1];
-        memcpy(&m_Name, &e.m_Name, e.m_Name.Size() + 1);
-        std::cout << "Copied! n\n";
+        DEBUG_PRINT("Copied!");
     }
 
     Entity(Entity&& e) noexcept
+        :
+        m_Name(std::move(e.m_Name))
     {
-        m_Name = e.m_Name;
-        e.m_Name = nullptr;
-        std::cout << "Moved!\n";
+        DEBUG_PRINT("Moved!");
     }
 
     ~Entity()
     {
-        std::cout << "Destroyed!\n";
+        DEBUG_PRINT("Destroyed!");
     }
 
 private:
@@ -142,7 +163,7 @@ std::ostream& operator<<(std::ostream& os, String& str)
 int main()
 {
 
-    //Move
+    //Creating
     String str("Hello, World!");
     String str2("Goodbye, World!");
 
@@ -158,6 +179,12 @@ int main()
 
     //Copy
     Entity e2(e);
+
+    //Moved
+    Entity e3("MoveSemantics");
+
+    //Moved
+    Entity e4(std::move(e2));
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
