@@ -6,10 +6,10 @@
 #define NULL_TERMINATOR 1
 
 /** MUST define to get dub strings printed to the console
-*       |
-*       |
-*       V
-* **/
+*       |                                               *
+*       |                                               *
+*       V                                               *
+*********************************************************/
         
 
 //#define DEBUGGING
