@@ -79,7 +79,7 @@ public:
         std::cout << m_Data << '\n';
     }
 
-    size_t Size()
+    inline size_t Size()
     {
         return m_Size;
     }
@@ -92,24 +92,26 @@ private:
 class Entity
 {
 public:
-    Entity()
+
+    Entity(String& name) noexcept
+        :
+        m_Name(name)
     {
-        std::cout << "Created! f\n";
-        m_Name = "Hey";
+        std::cout << "Created!\n";
     }
 
     Entity(String&& name) noexcept
         :
         m_Name(std::move(name))
     {
-        std::cout << "Created! h\n";
+        std::cout << "Created!\n";
     }
 
-    Entity(const Entity& e) noexcept
-        :
-        m_Name(e.m_Name)
+    Entity(Entity& e) noexcept
     {
-        std::cout << "Copied! d\n";
+        m_Name = new char[e.m_Name.Size() + 1];
+        memcpy(&m_Name, &e.m_Name, e.m_Name.Size() + 1);
+        std::cout << "Copied! n\n";
     }
 
     Entity(Entity&& e) noexcept
@@ -139,18 +141,23 @@ std::ostream& operator<<(std::ostream& os, String& str)
 
 int main()
 {
-    String str("Hello, World!");
-    String str2(str);
 
-    //str = str2;
+    //Move
+    String str("Hello, World!");
+    String str2("Goodbye, World!");
+
+    //Copy
+    str = str2;
 
     std::cout << str << '\n';
     str.Print();
     std::cout << str.Size() << '\n';
 
-    Entity e;
-    //Entity e2(e);
-    std::string;
+    //Copy
+    Entity e(str);
+
+    //Copy
+    Entity e2(e);
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
